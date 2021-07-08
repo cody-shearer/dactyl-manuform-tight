@@ -37,10 +37,10 @@
 (def recess-bottom-plate true)
 
 (defn column-curvature [column] 
-              (cond  (= column 0)  (deg2rad 17) ;;index outer
-                     (= column 1)  (deg2rad 17) ;;index
+              (cond  (= column 0)  (deg2rad 16) ;;index outer
+                     (= column 1)  (deg2rad 16) ;;index
                      (= column 2)  (deg2rad 14) ;;middle
-                     (= column 3)  (deg2rad 14) ;;ring
+                     (= column 3)  (deg2rad 16) ;;ring
                      (= column 4)  (deg2rad 19) ;;pinky outer
                      (>= column 5) (deg2rad 19) ;;pinky outer
                      :else 0 ))
@@ -54,7 +54,7 @@
               (>= column 5) 1.8 ;;pinky outer
               :else 0 ))
 
-(def tenting-angle (deg2rad 35)) ; controls left-right tilt / tenting (higher number is more tenting) 
+(def tenting-angle (deg2rad 15)) ; controls left-right tilt / tenting (higher number is more tenting) 
 (def centercol 3)                ; or, change this for more destructive tenting control
 
 (defn column-offset [column] (cond
@@ -66,7 +66,7 @@
                   (>= column 5) [2 -18  4  ] ;;pinky outer
                   :else [0 0 0]))
 
-(def keyboard-z-offset 22.5)  ; controls overall height
+(def keyboard-z-offset 13)  ; controls overall height
 
 (def  extra-width 2)          ; extra horizontal space between the base of keys
 (defn extra-height [column]   ; extra vertical space between the base of keys
@@ -74,16 +74,16 @@
                  (= column 1)  1.9 ;;index
                  (= column 2)  1.7 ;;middle
                  (= column 3)  1.7 ;;ring
-                 (= column 4)  2.0 ;;pinky outer
-                 (>= column 5) 2.0 ;;pinky outer
+                 (= column 4)  1.9 ;;pinky outer
+                 (>= column 5) 1.9 ;;pinky outer
                  :else 0 ))
 
-(def wall-z-offset -7)  ; length of the first downward-sloping part of the wall (negative)
+(def wall-z-offset -6)  ; length of the first downward-sloping part of the wall (negative)
 (def wall-xy-offset 1)
 (def wall-thickness 1)  ; wall thickness parameter
 
-(def thumb-pos [5.5 1 9] )
-(def thumb-rot [0 10 0] )
+(def thumb-pos [-1 -3 -8] )
+(def thumb-rot [-2 9 2] )
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; General variables ;;
@@ -591,7 +591,7 @@ need to adjust for difference for thumb-z only"
                                        (- thumb-design-z plate-thickness) 
                                        0)) 
                             1.1))
-(def thumb-x-rotation-adjustment 10) ; globally adjust front/back tilt of thumb keys
+(def thumb-x-rotation-adjustment 9) ; globally adjust front/back tilt of thumb keys
 (defn thumb-place [rot move shape]
   (->> 
     (->> shape
@@ -1025,15 +1025,15 @@ need to adjust for difference for thumb-z only"
                            screw-insert-height
                          ))
 
-(def usb-holder (import "../things/usb_holder_w_reset.stl"))
+(def usb-holder (import "../things/usb_holder_w_reset_w_rj9.stl"))
 (def usb-holder-cutout-height 30.3)
 (def usb-holder-clearance 0.05)
 (def usb-holder-bottom-offset 0.05)
 
 (def usb-holder-offset-coordinates 
   (if use_hotswap
-    [-31.2 56.5 usb-holder-bottom-offset]
-    [-29.9 54.5 usb-holder-bottom-offset]))
+    [-92 66 usb-holder-bottom-offset]
+    [14 67.8 usb-holder-bottom-offset]))
 (def usb-holder (translate usb-holder-offset-coordinates usb-holder))
 (def usb-holder-space
   (translate [0 0 (/ usb-holder-bottom-offset 2)]
