@@ -50,20 +50,20 @@
               (= column 1)  2.0 ;;index
               (= column 2)  2.1 ;;middle
               (= column 3)  2.1 ;;ring
-              (= column 4)  1.8 ;;pinky outer
-              (>= column 5) 1.8 ;;pinky outer
+              (= column 4)  1.5 ;;pinky outer
+              (>= column 5) 1.5 ;;pinky outer
               :else 0 ))
 
-(def tenting-angle (deg2rad 15)) ; controls left-right tilt / tenting (higher number is more tenting) 
+(def tenting-angle (deg2rad 18)) ; controls left-right tilt / tenting (higher number is more tenting) 
 (def centercol 3)                ; or, change this for more destructive tenting control
 
 (defn column-offset [column] (cond
                   (= column 0)  [0  -3  1  ] ;;index outer
                   (= column 1)  [0  -3  1  ] ;;index
-                  (= column 2)  [0   3 -2.5] ;;middle
-                  (= column 3)  [0  -1  0  ] ;;ring
-                  (= column 4)  [2 -18  4  ] ;;pinky outer
-                  (>= column 5) [2 -18  4  ] ;;pinky outer
+                  (= column 2)  [0   5 -2.5] ;;middle
+                  (= column 3)  [0  0  0  ] ;;ring
+                  (= column 4)  [2 -14  2  ] ;;pinky outer
+                  (>= column 5) [2 -14  2  ] ;;pinky outer
                   :else [0 0 0]))
 
 (def keyboard-z-offset 13)  ; controls overall height
@@ -82,8 +82,8 @@
 (def wall-xy-offset 1)
 (def wall-thickness 1)  ; wall thickness parameter
 
-(def thumb-pos [-1 -3 -8] )
-(def thumb-rot [-2 9 2] )
+(def thumb-pos [-6 -1 0] )
+(def thumb-rot [0 2 5] )
 
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; General variables ;;
@@ -609,9 +609,9 @@ need to adjust for difference for thumb-z only"
      (rotate (deg2rad (nth thumb-rot 2)) [0 0 1])))
 
 ; convexer
-(defn thumb-r-place [shape] (thumb-place [14 -35 10] [-14 -10 5] shape)) ; right
-(defn thumb-m-place [shape] (thumb-place [10 -23 20] [-33 -15 -6] shape)) ; middle
-(defn thumb-l-place [shape] (thumb-place [6 -5 25] [-53 -23.5 -11.5] shape)) ; left
+(defn thumb-r-place [shape] (thumb-place [14.5 -39 11] [-15 -10 5] shape)) ; right
+(defn thumb-m-place [shape] (thumb-place [9.5 -23 20] [-32.8 -15 -6] shape)) ; middle
+(defn thumb-l-place [shape] (thumb-place [8 -4 27] [-52 -23.5 -11] shape)) ; left
 
 (defn thumb-layout [shape]
   (union
@@ -715,17 +715,22 @@ need to adjust for difference for thumb-z only"
       (key-place 1 cornerrow web-post-bl)
       (key-place 1 cornerrow web-post-br)) (color BLU))
     (->> (triangle-hulls
-      (thumb-r-place web-post-tl)
-      (thumb-r-place web-post-tr)
-      (key-place 1 cornerrow fat-web-post-br)
-      (key-place 2 lastrow web-post-tl)
+      (thumb-r-place fat-web-post-tl)
+      (thumb-r-place fat-web-post-tr)
+      (key-place 1 cornerrow web-post-br)
+      ;(key-place 2 lastrow web-post-tl)
       ) (color NBL))
     (->> (triangle-hulls
       (thumb-r-place web-post-br)
       (thumb-r-place web-post-tr)
       (key-place 2 lastrow web-post-bl)
-      (key-place 2 lastrow web-post-tl)
+      (key-place 1 cornerrow web-post-br)
       ) (color ORA))
+    (->> (triangle-hulls
+      (key-place 1 cornerrow web-post-br)
+      (key-place 2 lastrow web-post-bl)
+      (key-place 2 lastrow web-post-tl)
+      ) (color RED))
     (->> (triangle-hulls
       (key-place 2 lastrow fat-web-post-tl)
       ; (thumb-r-place fat-web-post-tr)
@@ -954,7 +959,7 @@ need to adjust for difference for thumb-z only"
     (for [x (range 4 ncols)] (key-wall-brace x cornerrow 0 -1 fat-web-post-bl      x  cornerrow 0 -1 fat-web-post-br)) ; TODO fix extra wall
     (for [x (range 5 ncols)] (key-wall-brace x cornerrow 0 -1 fat-web-post-bl (dec x) cornerrow 0 -1 fat-web-post-br))
     (->> (wall-brace thumb-r-place 0 -1 fat-web-post-br (partial key-place 3 lastrow) 0 -1 web-post-bl) 
-         (color RED))
+         (color CYA))
   )
 )
 
@@ -963,7 +968,7 @@ need to adjust for difference for thumb-z only"
     ; thumb walls
     (->> (wall-brace thumb-r-place  0 -1 fat-web-post-br thumb-r-place  0 -1 fat-web-post-bl) (color ORA))
     (->> (wall-brace thumb-m-place  0 -1 fat-web-post-br thumb-m-place  0 -1 fat-web-post-bl) (color YEL))
-    (->> (wall-brace thumb-l-place  0 -1 fat-web-post-br thumb-l-place  0 -1 fat-web-post-bl) (color GRE))
+    (->> (wall-brace thumb-l-place  0 -1 fat-web-post-br thumb-l-place  0 -1 fat-web-post-bl) (color RED))
     (->> (wall-brace thumb-l-place  0  1 fat-web-post-tr thumb-l-place  0  1 fat-web-post-tl) (color CYA))
     (->> (wall-brace thumb-l-place -1  0 fat-web-post-tl thumb-l-place -1  0 fat-web-post-bl) (color BLU))
     ; thumb corners
@@ -1001,10 +1006,10 @@ need to adjust for difference for thumb-z only"
 
 (def screw-insert-bottom-offset 0)
 (defn screw-insert-all-shapes [bottom-radius top-radius height]
-  (union (->> (screw-insert 2             0 bottom-radius top-radius height [  1    5 screw-insert-bottom-offset]) (color RED))    ; top middle
+  (union (->> (screw-insert 2             0 bottom-radius top-radius height [  1    4.5 screw-insert-bottom-offset]) (color RED))    ; top middle
          (->> (screw-insert 0             1 bottom-radius top-radius height [ -6  -13   screw-insert-bottom-offset]) (color PIN))    ; left
-         (->> (screw-insert 0       lastrow bottom-radius top-radius height [-24  -15   screw-insert-bottom-offset]) (color BRO))    ;thumb
-         (->> (screw-insert (- lastcol 1) 0 bottom-radius top-radius height [ 15    1.5 screw-insert-bottom-offset]) (color PUR))    ; top right
+         (->> (screw-insert 0       lastrow bottom-radius top-radius height [-24  -15.5   screw-insert-bottom-offset]) (color BRO))    ;thumb
+         (->> (screw-insert (- lastcol 1) 0 bottom-radius top-radius height [ 15    5 screw-insert-bottom-offset]) (color PUR))    ; top right
          (->> (screw-insert 2 (+ lastrow 1) bottom-radius top-radius height [ 17.5  9.5 screw-insert-bottom-offset]) (color BLA)) )) ;bottom middle
 
 ; Hole Depth Y: 4.4
@@ -1018,7 +1023,7 @@ need to adjust for difference for thumb-z only"
                           (* screw-insert-height 1.5)
                         ))
 
-(def screw-insert-wall-thickness 3.5)
+(def screw-insert-wall-thickness 3)
 (def screw-insert-outers ( screw-insert-all-shapes 
                            (+ screw-insert-radius screw-insert-wall-thickness) 
                            (+ screw-insert-radius screw-insert-wall-thickness) 
@@ -1033,7 +1038,7 @@ need to adjust for difference for thumb-z only"
 (def usb-holder-offset-coordinates 
   (if use_hotswap
     [-92 66 usb-holder-bottom-offset]
-    [14 67.8 usb-holder-bottom-offset]))
+    [15 67.8 usb-holder-bottom-offset]))
 (def usb-holder (translate usb-holder-offset-coordinates usb-holder))
 (def usb-holder-space
   (translate [0 0 (/ usb-holder-bottom-offset 2)]
@@ -1237,22 +1242,16 @@ need to adjust for difference for thumb-z only"
         ; (difference
           (union
             ; (->>  
-              (model-right false)
               ; (color BLU)
             ; )
-            ; caps
+             caps
             ; (debug caps-cutout)
-            ; thumbcaps
+             thumbcaps
             ; (debug thumbcaps-cutout)
             ; (debug key-space-below)
             ; (debug thumb-space-below)
             ; (if use_hotswap(debug thumb-space-hotswap))
-
-            (debug usb-holder)
-            (translate [0 0 (- (/ bottom-plate-thickness 2))]
-                (debug bottom-plate)
-                (translate [8 -100 (- (/ bottom-plate-thickness 2))] wrist-rest-right-holes)
             )
           )
         ; )
-      ))
+      )
